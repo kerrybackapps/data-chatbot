@@ -12,6 +12,57 @@ app = Flask(__name__)
 # Configure OpenAI
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+# Load industries.csv to get available industry values
+def load_industries():
+    try:
+        industries = []
+        with open('industries.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip header row
+            for row in reader:
+                if len(row) > 0 and row[0].strip():  # Skip empty values
+                    industries.append(row[0].strip())
+        
+        # Remove duplicates and sort
+        industries = sorted(list(set(industries)))
+        return "AVAILABLE INDUSTRIES:\n" + ", ".join(industries) + "\n"
+    except Exception as e:
+        return f"Error loading industries: {str(e)}\n"
+
+# Load sectors.csv to get available sector values
+def load_sectors():
+    try:
+        sectors = []
+        with open('sectors.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip header row
+            for row in reader:
+                if len(row) > 0 and row[0].strip():  # Skip empty values
+                    sectors.append(row[0].strip())
+        
+        # Remove duplicates and sort
+        sectors = sorted(list(set(sectors)))
+        return "AVAILABLE SECTORS:\n" + ", ".join(sectors) + "\n"
+    except Exception as e:
+        return f"Error loading sectors: {str(e)}\n"
+
+# Load sizes.csv to get available size values  
+def load_sizes():
+    try:
+        sizes = []
+        with open('sizes.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip header row
+            for row in reader:
+                if len(row) > 0 and row[0].strip():  # Skip empty values
+                    sizes.append(row[0].strip())
+        
+        # Remove duplicates and sort
+        sizes = sorted(list(set(sizes)))
+        return "AVAILABLE SIZES (scalemarketcap):\n" + ", ".join(sizes) + "\n"
+    except Exception as e:
+        return f"Error loading sizes: {str(e)}\n"
+
 # Load examples.csv to get example prompts and responses
 def load_examples():
     try:
@@ -59,14 +110,28 @@ RULES:
 - Use table aliases for joins
 - Add WHERE clauses to limit results
 
+IMPORTANT FILTERING INSTRUCTIONS:
+- For industry filtering, use the 'industry' column in the TICKERS table
+- For sector filtering, use the 'sector' column in the TICKERS table  
+- For size filtering, use the 'scalemarketcap' column in the TICKERS table
+
+{}
+
+{}
+
+{}
+
 {}
 
 {}"""
 
-# Load database schema and examples once at startup
+# Load database schema, examples, industries, sectors, and sizes once at startup
 DATABASE_SCHEMA = load_database_schema()
 EXAMPLES = load_examples()
-COMPLETE_SYSTEM_PROMPT = SYSTEM_PROMPT.format(DATABASE_SCHEMA, EXAMPLES)
+INDUSTRIES = load_industries()
+SECTORS = load_sectors()
+SIZES = load_sizes()
+COMPLETE_SYSTEM_PROMPT = SYSTEM_PROMPT.format(DATABASE_SCHEMA, EXAMPLES, INDUSTRIES, SECTORS, SIZES)
 
 @app.route('/')
 def index():
