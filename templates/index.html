@@ -109,6 +109,29 @@
             font-size: 0.9rem;
             margin-top: 0.5rem;
             white-space: pre-wrap;
+            position: relative;
+        }
+        
+        .copy-button {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .copy-button:hover {
+            background: #495057;
+        }
+        
+        .copy-button.copied {
+            background: #28a745;
         }
         
         .loading-spinner {
@@ -247,7 +270,13 @@
                 
                 return text.replace(sqlBlockRegex, (match, p1, p2, p3) => {
                     const sqlCode = p1 || p2 || p3;
-                    return `<div class="sql-code">${escapeHtml(sqlCode.trim())}</div>`;
+                    const uniqueId = 'sql-' + Math.random().toString(36).substr(2, 9);
+                    return `<div class="sql-code" id="${uniqueId}">
+                        <button class="copy-button" onclick="copySQLCode('${uniqueId}', this)">
+                            <i class="bi bi-clipboard"></i> Copy
+                        </button>
+                        ${escapeHtml(sqlCode.trim())}
+                    </div>`;
                 }).replace(/\n/g, '<br>');
             }
             
@@ -263,6 +292,62 @@
                 "'": '&#039;'
             };
             return text.replace(/[&<>"']/g, m => map[m]);
+        }
+        
+        async function copySQLCode(elementId, button) {
+            try {
+                const sqlElement = document.getElementById(elementId);
+                // Get the text content, but exclude the copy button text
+                const copyButton = sqlElement.querySelector('.copy-button');
+                const originalDisplay = copyButton.style.display;
+                copyButton.style.display = 'none';
+                
+                const sqlText = sqlElement.textContent.trim();
+                
+                copyButton.style.display = originalDisplay;
+                
+                // Use the modern clipboard API
+                await navigator.clipboard.writeText(sqlText);
+                
+                // Update button to show success
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                button.classList.add('copied');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                // Fallback for older browsers
+                const sqlElement = document.getElementById(elementId);
+                const copyButton = sqlElement.querySelector('.copy-button');
+                const originalDisplay = copyButton.style.display;
+                copyButton.style.display = 'none';
+                
+                const sqlText = sqlElement.textContent.trim();
+                copyButton.style.display = originalDisplay;
+                
+                // Create a temporary textarea
+                const textArea = document.createElement('textarea');
+                textArea.value = sqlText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Update button to show success
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+            }
         }
         
         // Focus on input when page loads

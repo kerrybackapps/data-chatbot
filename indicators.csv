@@ -135,80 +135,6 @@ SF2,dateexercisable,Date Exercisable,The date that an option is exercisable; whe
 SF2,priceexercisable,Price Exercisable,The price at which an option is exercisable; where applicable and available.
 SF2,expirationdate,Expiration Date,The data at which an option expires; where applicable and available
 SF2,rownum,Row Number,The record number for a particular owner and filing date; which forms part of the key for the record.
-SF3,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
-SF3,investorname,Institutional Investor Name,The investor name is a unique identifier for the institutional investor.
-SF3,securitytype,Security Type,The available options to filter the SecurityType field are as follows: [SHR] Common Shares [FND] Fund Units [CLL] Call Options [PUT] Put Options [WNT] Warrants [DBT] Debt [PRF] Preferred Shares [UND] Unidentified Security Type
-SF3,calendardate,Calendar Date,The calendar date field represents the last day of the calendar quarter.
-SF3,value,Value,The total USD value of the current line item.
-SF3,units,Units,The number of units in the current line item.
-SF3,price,Price,The imputed price per unit of the current line item.
-SF3A,calendardate,Calendar Date,The calendar date field represents the last day of the calendar quarter.
-SF3A,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
-SF3A,name,Issuer Name,The name of the issuer.
-SF3A,shrholders,Number of Shareholders (Institutional),The number of shareholders.
-SF3A,cllholders,Number of Call holders (Institutional),The number of call holders.
-SF3A,putholders,Number of Put holders (institutional),The number of put holders.
-SF3A,wntholders,Number of Warrant holders (institutional),The number of warrant holders.
-SF3A,dbtholders,Number of Debt holders (institutional),The number of debt holders.
-SF3A,prfholders,Number of Preferred Stock holders (institutional),The number of preferred stock holders.
-SF3A,fndholders,Number of Fund holders (institutional),The number of fund holders.
-SF3A,undholders,Number of Unidentified Security type holders (institutional),The number of unidentified security type holders.
-SF3A,shrunits,Number of Share Units held (institutional),The total number of share units held.
-SF3A,cllunits,Number of Call Units held (institutional),The total number of call units held.
-SF3A,putunits,Number of Put Units held (institutional),The total number of put units held.
-SF3A,wntunits,Number of Warrant Units held (institutional),The total number of warrant units held.
-SF3A,dbtunits,Number of Debt Units held (institutional),The total number of debt units held.
-SF3A,prfunits,Number of Preferred Stock units held (institutional),The total number of preferred stock units held.
-SF3A,fndunits,Number of Fund units held (institutional),The total number of fund units held.
-SF3A,undunits,Number of Unidentified Security type units held (institutional),The total number of unidentified security type units held.
-SF3A,shrvalue,Value of Share units held (institutional),The total value of share units held.
-SF3A,cllvalue,Value of Call units held (institutional),The total value of call units held.
-SF3A,putvalue,Value of Put units held (institutional),The total value of put units held.
-SF3A,wntvalue,Value of Warrant units held (institutional),The total value of warrant units held.
-SF3A,dbtvalue,Value of Debt units held (institutional),The total value of debt units held.
-SF3A,prfvalue,Value of Preferred Stock units held (institutional),The total value of preferred stock units held.
-SF3A,fndvalue,Value of Fund units held (institutional),The total value of fund units held.
-SF3A,undvalue,Value of Unidentified Security type units held (institutional),The total value of unidentified security type units held.
-SF3A,totalvalue,Total Value of all Security types held (institutional),The total value of all security types held.
-SF3A,percentoftotal,Percentage of Total Institutional Holdings for the Quarter,The percentage that the [TotalValue] of this line item constitutes of all institutional holdings for this quarter.
-SF3B,calendardate,Calendar Date,The calendar date field represents the last day of the calendar quarter.
-SF3B,investorname,Institutional Investor Name,The investor name is a unique identifier for the institutional investor.
-SF3B,shrholdings,Number of Distinct Share holdings (institutional),The number of distinct share holdings held by the institution.
-SF3B,cllholdings,Number of Distinct Call holdings (institutional),The number of distinct call holdings held by the institution.
-SF3B,putholdings,Number of Distinct Put holdings (institutional),The number of distinct put holdings held by the institution.
-SF3B,wntholdings,Number of Distinct Warrant holdings (institutional),The number of distinct warrant holdings held by the institution.
-SF3B,dbtholdings,Number of Distinct Debt holdings (institutional),The number of distinct debt holdings held by the institution.
-SF3B,prfholdings,Number of Distinct Preferred Stock holdings (institutional),The number of distinct preferred stock holdings held by the institution.
-SF3B,fndholdings,Number of Distinct Fund holdings (institutional),The number of distinct fund holdings held by the institution.
-SF3B,undholdings,Number of Distinct Unidentified Security type holdings (institutional),The number of distinct unidentified security types held by the institution.
-SF3B,shrunits,Number of Share Units held (institutional),The total number of share units held.
-SF3B,cllunits,Number of Call Units held (institutional),The total number of call units held.
-SF3B,putunits,Number of Put Units held (institutional),The total number of put units held.
-SF3B,wntunits,Number of Warrant Units held (institutional),The total number of warrant units held.
-SF3B,dbtunits,Number of Debt Units held (institutional),The total number of debt units held.
-SF3B,prfunits,Number of Preferred Stock units held (institutional),The total number of preferred stock units held.
-SF3B,fndunits,Number of Fund units held (institutional),The total number of preferred stock units held.
-SF3B,undunits,Number of Unidentified Security type units held (institutional),The total number of unidentified security type units held.
-SF3B,shrvalue,Value of Share units held (institutional),The total value of share units held.
-SF3B,cllvalue,Value of Call units held (institutional),The total value of call units held.
-SF3B,putvalue,Value of Put units held (institutional),The total value of put units held.
-SF3B,wntvalue,Value of Warrant units held (institutional),The total value of warrant units held.
-SF3B,dbtvalue,Value of Debt units held (institutional),The total value of debt units held.
-SF3B,prfvalue,Value of Preferred Stock units held (institutional),The total value of preferred stock units held.
-SF3B,fndvalue,Value of Fund units held (institutional),The total value of fund units held.
-SF3B,undvalue,Value of Unidentified Security type units held (institutional),The total value of unidentified security type units held.
-SF3B,totalvalue,Total Value of all Security types held (institutional),The total value of unidentified security type units held.
-SF3B,percentoftotal,Percentage of Total Institutional Holdings for the Quarter,The percentage that the [TotalValue] of this line item constitutes of all institutional holdings for this quarter.
-SFP,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
-SFP,date,Price Date,The trade date of the price observations.
-SFP,open,Open Price - Split Adjusted,The official exchange opening price; adjusted for stock splits and stock dividends. Not adjusted for cash dividends or spinoffs.
-SFP,high,High Price - Split Adjusted,The high share price; adjusted for stock splits and stock dividends. Not adjusted for cash dividends or spinoffs.
-SFP,low,Low Price - Split Adjusted,The low share price; adjusted for stock splits and stock dividends. Not adjusted for cash dividends or spinoffs.
-SFP,close,Close Price - Split Adjusted,The official exchange close price; adjusted for stock splits and stock dividends. Not adjusted for cash dividends or spinoffs.
-SFP,volume,Volume - Split Adjusted,The daily traded volume across all exchanges; adjusted for stock splits and stock dividends. Not adjusted for cash dividends or spinoffs. Includes opening and closing cross volume if applicable.
-SFP,closeadj,Close Price - Adjusted for Splits Dividends and Spinoffs,The official exchange close price; adjusted for stock splits; stock dividends; cash dividends and spinoffs.
-SFP,closeunadj,Close Price - Unadjusted,The official exchange close price; not adjusted for stock splits; stock dividends; cash dividends or spinoffs.
-SFP,lastupdated,Last Updated Date,The last date at which this line item was updated; typically used to filter data to be retrieved for syncing to local records.
 ACTIONS,date,Date,The date of the corporate action.
 ACTIONS,action,Action,The available actions in this field are outlined in the INDICATORS table where the table field equals ACTIONTYPES.
 ACTIONS,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
@@ -285,13 +211,6 @@ EVENTCODES,37,Tender Offer Statement under Section 14(d)(1) or 13(e)(1) of the S
 EVENTS,date,Filing Date,The date of the form 8 SEC filing.
 EVENTS,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
 EVENTS,eventcodes,Material Corporate Events,Each type of event is assigned a 2-digit numeric code which are described in this INDICATORS table where the table field equals EVENTCODES.
-INDICATORS,table,Table,"The database table which the ticker is featured in. Examples are: SF1 or SEP.	"
-INDICATORS,indicator,Indicator Code,
-INDICATORS,isfilter,Is Filter?,
-INDICATORS,isprimarykey,Is Primary Key?,
-INDICATORS,title,Indicator Title,
-INDICATORS,description,Indicator Description,
-INDICATORS,unittype,Indicator Unit Type,
 METRICS,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
 METRICS,date,Price Date,The trade date of the most recent price and volume available.
 METRICS,lastupdated,Last Updated Date,Last updated date represents the last date that this table entry was updated; which is useful to users when updating their local records.
@@ -325,27 +244,6 @@ SEP,volume,Volume - Split Adjusted,The daily traded volume across all exchanges;
 SEP,closeadj,Close Price - Adjusted for Splits Dividends and Spinoffs,The official exchange close price; adjusted for stock splits; stock dividends; cash dividends and spinoffs.
 SEP,closeunadj,Close Price - Unadjusted,The official exchange close price; not adjusted for stock splits; stock dividends; cash dividends or spinoffs.
 SEP,lastupdated,Last Updated Date,The last date at which this line item was updated; typically used to filter data to be retrieved for syncing to local records.
-SP500,date,Date,The action date.
-SP500,action,Action,"The available actions in this database are: current; added; removed and historical.	"
-SP500,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
-SP500,name,Issuer Name,The name of the issuer.
-SP500,contraticker,Contra Ticker Symbol,The contra ticker is the opposing ticker entry. It represents the ticker that has been removed where the action=added; and the ticker that has been added where the action=removed.
-SP500,contraname,Contra Issuer Name,The name of the contra issuer.
-SP500,note,Notes,Placeholder for notes and additional information regarding additions to and removals from the S&P500.
-TABLE-DESCRIPTIONS,SF1,Core US Fundamentals Table (SF1),"The primary US fundamentals table that contains income statement; balance sheet; cash flow statement, and derived and price-based metrics. Observations are provided quarterly; annually; and for trailing twelve month periods where available. Multiple dimensions are provided to view the data before and after the impact of restatements. The data are originally curated from SEC filings via forms 10; 20; 40; S-1; S-4; F-1; F-40; and 6-K."
-TABLE-DESCRIPTIONS,SF2,Core US Insiders Table (SF2),The SHARADAR/SF2 table contains insider transactions and holdings from SEC filings via form 3; 4; and 5. These filings must be made within 2 business days of any transaction occurring. Find out more about the SEC filing requirements here: https://www.sec.gov/files/forms-3-4-5.pdf.
-TABLE-DESCRIPTIONS,SF3,Sharadar US Institutional Investors Table (SF3),The SHARADAR/SF3 table contains institutional investor portfolio holdings disclosed via SEC form 13F filings. These filings are made quarterly up to 45 days after the end of the quarter. Find out more about the SEC filing requirements here: https://www.sec.gov/pdf/form13f.pdf.
-TABLE-DESCRIPTIONS,SF3A,Sharadar US Institutional Investors Summary By Ticker Table (SF3A),The SHARADAR/SF3A table summarises the institutional investor table (SF3) by ticker.
-TABLE-DESCRIPTIONS,SF3B,Sharadar US Institutional Investors Summary By Investor Table (SF3B),The SHARADAR/SF3B table summarises the institutional investor table (SF3) by investor.
-TABLE-DESCRIPTIONS,SEP,Sharadar Equity Prices Table (SEP),The SHARADAR/SEP table provides end-of-day (EOD) prices for listed equities; including common stock; warrants and preferred stock. Data are provided (1) unadjusted (2) adjusted for stock splits (3) adjusted for stock splits; cash dividends; and spinoffs.
-TABLE-DESCRIPTIONS,SFP,Sharadar Fund Prices Table (SFP),The SHARADAR/SFP table provides end-of-day (EOD) prices for listed equities; including common stock; warrants and preferred stock. Data are provided (1) unadjusted (2) adjusted for stock splits (3) adjusted for stock splits; cash dividends; and spinoffs.
-TABLE-DESCRIPTIONS,TICKERS,Sharadar Tickers And Metadata Table (TICKERS),The SHARADAR/TICKERS table provides rich metadata for tickers in the SF1; SEP; and SFP tables. In addition it provides metadata for investors in the SF3/SF3B tables. 
-TABLE-DESCRIPTIONS,INDICATORS,Sharadar Indicator Descriptions Table (INDICATORS),The SHARADAR/INDICATORS table provides descriptions of the indicators available in the Sharadar tables.
-TABLE-DESCRIPTIONS,DAILY,Sharadar Daily Fundamental Metrics Table (DAILY),The SHARADAR/DAILY table provides price-based fundamentals metrics with daily resolution.
-TABLE-DESCRIPTIONS,SP500,Sharadar S&P500 Current And Historical Constituents Table (SP500),The SHARADAR/DAILY table provides current S&P500 constituents; as well as historical changes and historical constituents.
-TABLE-DESCRIPTIONS,ACTIONS,Sharadar Corporate Actions Table (ACTIONS),The SHARADAR/ACTIONS table provides rich corporate actions history that includes cash dividends; ticker changes; spinoffs; M&A; bankruptcies and other delistings.
-TABLE-DESCRIPTIONS,EVENTS,Sharadar Material Corporate Events Table (EVENTS),The SHARADAR/EVENTS table provides material corporate events as reported to the SEC via form 8-K. Find out more about the SEC filing requirements here: https://www.sec.gov/files/form8-k.pdf.
-TABLE-DESCRIPTIONS,METRICS,Sharadar Price Based Metrics Table (METRICS),The SHARADAR/METRICS table provides price-based metrics such as beta; dividend yield; moving averages; high price; low price; and average volume.
 TICKERS,permaticker,Permanent Ticker Symbol,The permaticker is a unique and unchanging identifier for an issuer in the dataset which we as the data provider issue. This field is not included in other tables in order to maximise data scalability in those tables.
 TICKERS,ticker,Ticker Symbol,The ticker is a unique identifier for a security in the database. Where a company is delisted and the ticker subsequently recycled for use by a different company; we utilise that ticker for the currently active company and append a number to the ticker of the delisted company. The ACTIONS table provides a record of historical ticker changes.
 TICKERS,name,Issuer Name,The name of the security issuer.
