@@ -57,8 +57,9 @@ def load_sizes():
                 if len(row) > 0 and row[0].strip():  # Skip empty values
                     sizes.append(row[0].strip())
         
-        # Remove duplicates and sort
-        sizes = sorted(list(set(sizes)))
+        # Remove duplicates and maintain order (Mega, Large, Mid, Small, Micro, Nano)
+        size_order = ['Mega', 'Large', 'Mid', 'Small', 'Micro', 'Nano']
+        sizes = [s for s in size_order if s in sizes]
         return "AVAILABLE SIZES (scalemarketcap):\n" + ", ".join(sizes) + "\n"
     except Exception as e:
         return f"Error loading sizes: {str(e)}\n"
@@ -67,13 +68,11 @@ def load_sizes():
 def load_examples():
     try:
         examples_text = "EXAMPLES:\n"
-        count = 0
         with open('examples.csv', 'r') as file:
             reader = csv.reader(file)
             for row in reader:
-                if len(row) >= 2 and row[0].strip() and row[1].strip() and count < 3:
+                if len(row) >= 2 and row[0].strip() and row[1].strip():
                     examples_text += f"Q: {row[0]}\nA: {row[1]}\n"
-                    count += 1
         
         return examples_text
     except Exception as e:
