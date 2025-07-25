@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import openai
 import os
 from dotenv import load_dotenv
-import pandas as pd
+import csv
 
 # Load environment variables
 load_dotenv()
@@ -12,30 +12,61 @@ app = Flask(__name__)
 # Configure OpenAI
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+# Load examples.csv to get example prompts and responses
+def load_examples():
+    try:
+        examples_text = "EXAMPLES:\n"
+        count = 0
+        with open('examples.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if len(row) >= 2 and row[0].strip() and row[1].strip() and count < 3:
+                    examples_text += f"Q: {row[0]}\nA: {row[1]}\n"
+                    count += 1
+        
+        return examples_text
+    except Exception as e:
+        return f"Error loading examples: {str(e)}\n"
+
 # Load indicators.csv to get database schema
 def load_database_schema():
     try:
-        df = pd.read_csv('indicators.csv')
-        # Convert the CSV to a description of tables and columns
-        schema_description = "The database contains the following tables and columns:\n\n"
+        schema_description = "TABLES:\n"
+        tables = {}
         
-        # Group by table
-        for table in df['table'].unique():
-            table_df = df[df['table'] == table]
-            schema_description += f"Table: {table}\n"
-            schema_description += "Columns:\n"
-            for _, row in table_df.iterrows():
-                schema_description += f"  - {row['column']} ({row['label']}): {row['description']}\n"
-            schema_description += "\n"
+        with open('indicators.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                table = row['table']
+                if table not in tables:
+                    tables[table] = []
+                tables[table].append(f"{row['column']} ({row['label']})")
+        
+        # Format output by table - more concise
+        for table, columns in tables.items():
+            schema_description += f"{table}: {', '.join(columns)}\n"
         
         return schema_description
     except Exception as e:
-        return f"Error loading database schema: {str(e)}"
+        return f"Error loading schema: {str(e)}"
 
 # System prompt for SQL query generation
-SYSTEM_PROMPT = """Your only task is to provide a SQL query based on the prompt to execute at the database with tables and columns described below. You may ask the user if you do not understand something but your only objective is to provide a SQL query. You do not provide data or links or other advice. The database description is as follows:
+SYSTEM_PROMPT = """Generate SQL queries for DuckDB. ONLY return SELECT statements - no other SQL operations allowed.
+
+RULES:
+- Return only the SQL query, no explanations
+- Use proper formatting with semicolons
+- Use table aliases for joins
+- Add WHERE clauses to limit results
+
+{}
 
 {}"""
+
+# Load database schema and examples once at startup
+DATABASE_SCHEMA = load_database_schema()
+EXAMPLES = load_examples()
+COMPLETE_SYSTEM_PROMPT = SYSTEM_PROMPT.format(DATABASE_SCHEMA, EXAMPLES)
 
 @app.route('/')
 def index():
@@ -49,17 +80,11 @@ def chat():
         if not user_message:
             return jsonify({'error': 'No message provided'}), 400
         
-        # Load the database schema
-        schema = load_database_schema()
-        
-        # Create the complete system prompt
-        complete_system_prompt = SYSTEM_PROMPT.format(schema)
-        
         # Call OpenAI API
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": complete_system_prompt},
+                {"role": "system", "content": COMPLETE_SYSTEM_PROMPT},
                 {"role": "user", "content": user_message}
             ],
             temperature=0.7,

@@ -1,0 +1,7 @@
+what are the sectors in the database,select distinct sector from tickers
+what are the industries in the database,select distinct industry from tickers
+how many currently listed firms are in the database,select count(*) from tickers where isdelisted = 'N'
+how many days are in the database,select count(distinct date) from sep
+get the history of Apple's stock price,select * from sep where ticker = 'AAPL'
+what are the different size categories in the database,select distinct scalemarketcap from tickers
+how many total firms are in the database,select count(*) from tickers  
