@@ -46,23 +46,11 @@ def load_sectors():
     except Exception as e:
         return f"Error loading sectors: {str(e)}\n"
 
-# Load sizes.csv to get available size values  
+# Hardcoded sizes (previously from sizes.csv)
 def load_sizes():
-    try:
-        sizes = []
-        with open('sizes.csv', 'r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Skip header row
-            for row in reader:
-                if len(row) > 0 and row[0].strip():  # Skip empty values
-                    sizes.append(row[0].strip())
-        
-        # Remove duplicates and maintain order (Mega, Large, Mid, Small, Micro, Nano)
-        size_order = ['Mega', 'Large', 'Mid', 'Small', 'Micro', 'Nano']
-        sizes = [s for s in size_order if s in sizes]
-        return "AVAILABLE SIZES (scalemarketcap):\n" + ", ".join(sizes) + "\n"
-    except Exception as e:
-        return f"Error loading sizes: {str(e)}\n"
+    # Hardcoded sizes in order: Mega, Large, Mid, Small, Micro, Nano
+    sizes = ['Mega', 'Large', 'Mid', 'Small', 'Micro', 'Nano']
+    return "AVAILABLE SIZES (scalemarketcap):\n" + ", ".join(sizes) + "\n"
 
 # Load examples.csv to get example prompts and responses
 def load_examples():
