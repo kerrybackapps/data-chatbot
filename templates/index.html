@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rice Business Stock Market Data Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/flatly/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        /* Warm gray palette consistent with Flatly theme */
+        :root {
+            --flatly-gray: #6c757d;
+            --flatly-gray-light: #8a939b;
+            --flatly-gray-dark: #495057;
+            --rice-blue: #003c71;
+            --flatly-gray: #95a5a6;
+        }
+        
+        /* Header with Rice branding */
+        .header-section {
+            background: linear-gradient(135deg, var(--flatly-gray) 0%, var(--flatly-gray) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+        }
+        
+        .header-section h1 {
+            color: white !important;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 0 2%;
+        }
+        
+        .logo-container img {
+            max-height: 120px;
+            object-fit: contain;
+        }
+        
+        .mcnair-logo {
+            border-radius: 10px;
+            border: 2px solid white;
+            background: white;
+            padding: 2px;
+            width: 20%;
+            height: 80px;
+            object-fit: contain;
+        }
+        
+        .logo-container h1 {
+            width: 45%;
+            text-align: center;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .rice-logo {           
+            border-radius: 10px;
+            border: 2px solid white;
+            background: white;
+            padding: 2px;
+            width: 20%;
+            height: 80px;
+            object-fit: contain;
+        }
+        
+        /* Chat interface styles */
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            margin-bottom: 1rem;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+            text-align: right;
+        }
+        
+        .ai-message {
+            background-color: #ffffff;
+            margin-right: 20%;
+            border: 1px solid #dee2e6;
+        }
+        
+        .sql-code {
+            background-color: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            white-space: pre-wrap;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .btn-send {
+            background-color: #18bc9c !important;
+            border-color: #18bc9c !important;
+            color: white !important;
+        }
+        
+        .btn-send:hover {
+            background-color: #15a085 !important;
+            border-color: #15a085 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-11 col-sm-12">
+                
+                <!-- Rice University Header -->
+                <div class="header-section">
+                    <div class="logo-container">
+                        <img src="/static/images/mcnair.jpg" alt="McNair Center" class="mcnair-logo">
+                        <h1>Rice Business Stock Market Data Portal</h1>
+                        <img src="/static/images/rice-business.jpg" alt="Rice Business" class="rice-logo">
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="mb-4">SQL Query Assistant</h3>
+                        <p class="text-muted mb-4">Ask questions about the database and receive SQL queries to retrieve your data.</p>
+                        
+                        <!-- Chat messages container -->
+                        <div class="chat-container" id="chatContainer">
+                            <div class="ai-message message">
+                                <strong>SQL Assistant:</strong><br>
+                                Hello! I can help you generate SQL queries for the database. Please describe what data you're looking for, and I'll provide the appropriate SQL query.
+                            </div>
+                        </div>
+                        
+                        <!-- Loading spinner -->
+                        <div class="loading-spinner" id="loadingSpinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Input area -->
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="userInput" placeholder="Ask for a SQL query..." 
+                                   onkeypress="if(event.key === 'Enter') sendMessage()">
+                            <button class="btn btn-send" type="button" onclick="sendMessage()">
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            try {
+                // Send message to backend
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Add AI response to chat
+                    addMessage(data.response, 'ai');
+                } else {
+                    addMessage('Error: ' + (data.error || 'Unknown error occurred'), 'ai');
+                }
+            } catch (error) {
+                addMessage('Error: Failed to connect to the server', 'ai');
+            } finally {
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+        
+        function addMessage(text, sender) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender === 'user' ? 'user-message' : 'ai-message'}`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `<strong>You:</strong><br>${escapeHtml(text)}`;
+            } else {
+                // Check if the response contains SQL code
+                const formattedText = formatSQLResponse(text);
+                messageDiv.innerHTML = `<strong>SQL Assistant:</strong><br>${formattedText}`;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        function formatSQLResponse(text) {
+            // Look for SQL code patterns and format them
+            const sqlKeywords = /\b(SELECT|FROM|WHERE|JOIN|GROUP BY|ORDER BY|HAVING|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b/gi;
+            
+            // Check if the text contains SQL keywords
+            if (sqlKeywords.test(text)) {
+                // Try to identify SQL blocks (text between backticks or starting with SELECT, etc.)
+                const sqlBlockRegex = /```sql?\s*([\s\S]*?)```|```([\s\S]*?)```|(SELECT[\s\S]*?;)/gi;
+                
+                return text.replace(sqlBlockRegex, (match, p1, p2, p3) => {
+                    const sqlCode = p1 || p2 || p3;
+                    return `<div class="sql-code">${escapeHtml(sqlCode.trim())}</div>`;
+                }).replace(/\n/g, '<br>');
+            }
+            
+            return escapeHtml(text).replace(/\n/g, '<br>');
+        }
+        
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+        
+        // Focus on input when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('userInput').focus();
+        });
+    </script>
+</body>
+</html>
