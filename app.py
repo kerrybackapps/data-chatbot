@@ -49,7 +49,7 @@ def load_sectors():
 # Hardcoded sizes (previously from sizes.csv)
 def load_sizes():
     # Hardcoded sizes in order: Mega, Large, Mid, Small, Micro, Nano
-    sizes = ['Mega', 'Large', 'Mid', 'Small', 'Micro', 'Nano']
+    sizes = ['1 - Mega', '2 - Large', '3 - Mid', '4 - Micro', '5 - Small', '6 - Nano']
     return "AVAILABLE SIZES (scalemarketcap):\n" + ", ".join(sizes) + "\n"
 
 # Load examples.csv to get example prompts and responses
