@@ -99,39 +99,49 @@
             background-color: #ffffff;
             margin-right: 20%;
             border: 1px solid #dee2e6;
+            position: relative;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .copy-icon {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 1rem;
+            transition: color 0.2s;
+            display: none;
+        }
+        
+        .ai-message .copy-icon {
+            display: inline-block;
+        }
+        
+        .copy-icon:hover {
+            color: #495057;
+        }
+        
+        .copy-icon.copied {
+            color: #28a745;
         }
         
         .sql-code {
             background-color: #f5f5f5;
-            padding: 0.5rem;
+            padding: 1rem;
             border-radius: 0.25rem;
             font-family: monospace;
             font-size: 0.9rem;
             margin-top: 0.5rem;
             white-space: pre-wrap;
-            position: relative;
-        }
-        
-        .copy-button {
-            position: absolute;
-            top: 0.25rem;
-            right: 0.25rem;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 0.25rem;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .copy-button:hover {
-            background: #495057;
-        }
-        
-        .copy-button.copied {
-            background: #28a745;
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
         }
         
         .loading-spinner {
@@ -168,7 +178,7 @@
 
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h3 class="mb-4">SQL Query Assistant</h3>
+                        <h3 class="mb-4">SQL Query Assistant Powered by GPT-4 Turbo</h3>
                         <p class="text-muted mb-4">Ask questions about the database and receive SQL queries to retrieve your data.</p>
                         
                         <!-- Chat messages container -->
@@ -250,9 +260,25 @@
             if (sender === 'user') {
                 messageDiv.innerHTML = `<strong>You:</strong><br>${escapeHtml(text)}`;
             } else {
-                // Check if the response contains SQL code
+                // Create message with header containing copy button
+                const messageId = 'msg-' + Date.now();
+                const hasSQL = /\b(SELECT|FROM|WHERE|JOIN|GROUP BY|ORDER BY|HAVING)\b/gi.test(text);
+                
+                let headerHtml = `<div class="message-header">
+                    <strong>SQL Assistant:</strong>`;
+                
+                if (hasSQL) {
+                    headerHtml += `<button class="copy-icon" onclick="copyMessageSQL('${messageId}', this)" title="Copy SQL">
+                        <i class="bi bi-clipboard"></i>
+                    </button>`;
+                }
+                
+                headerHtml += `</div>`;
+                
+                // Format the message content
                 const formattedText = formatSQLResponse(text);
-                messageDiv.innerHTML = `<strong>SQL Assistant:</strong><br>${formattedText}`;
+                messageDiv.id = messageId;
+                messageDiv.innerHTML = headerHtml + formattedText;
             }
             
             chatContainer.appendChild(messageDiv);
@@ -270,13 +296,7 @@
                 
                 return text.replace(sqlBlockRegex, (match, p1, p2, p3) => {
                     const sqlCode = p1 || p2 || p3;
-                    const uniqueId = 'sql-' + Math.random().toString(36).substr(2, 9);
-                    return `<div class="sql-code" id="${uniqueId}">
-                        <button class="copy-button" onclick="copySQLCode('${uniqueId}', this)">
-                            <i class="bi bi-clipboard"></i> Copy
-                        </button>
-                        ${escapeHtml(sqlCode.trim())}
-                    </div>`;
+                    return `<div class="sql-code">${escapeHtml(sqlCode.trim())}</div>`;
                 }).replace(/\n/g, '<br>');
             }
             
@@ -294,57 +314,59 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
         
-        async function copySQLCode(elementId, button) {
+        async function copyMessageSQL(messageId, button) {
             try {
-                const sqlElement = document.getElementById(elementId);
-                // Get the text content, but exclude the copy button text
-                const copyButton = sqlElement.querySelector('.copy-button');
-                const originalDisplay = copyButton.style.display;
-                copyButton.style.display = 'none';
+                const messageElement = document.getElementById(messageId);
+                const sqlCodeElement = messageElement.querySelector('.sql-code');
                 
-                const sqlText = sqlElement.textContent.trim();
-                
-                copyButton.style.display = originalDisplay;
-                
-                // Use the modern clipboard API
-                await navigator.clipboard.writeText(sqlText);
+                if (!sqlCodeElement) {
+                    // If no SQL code block, copy entire message text
+                    const messageText = messageElement.textContent.replace('SQL Assistant:', '').trim();
+                    await navigator.clipboard.writeText(messageText);
+                } else {
+                    // Copy only the SQL code
+                    const sqlText = sqlCodeElement.textContent.trim();
+                    await navigator.clipboard.writeText(sqlText);
+                }
                 
                 // Update button to show success
-                const originalContent = button.innerHTML;
-                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i>';
                 button.classList.add('copied');
                 
                 // Reset button after 2 seconds
                 setTimeout(() => {
-                    button.innerHTML = originalContent;
+                    button.innerHTML = originalHtml;
                     button.classList.remove('copied');
                 }, 2000);
                 
             } catch (err) {
                 // Fallback for older browsers
-                const sqlElement = document.getElementById(elementId);
-                const copyButton = sqlElement.querySelector('.copy-button');
-                const originalDisplay = copyButton.style.display;
-                copyButton.style.display = 'none';
+                const messageElement = document.getElementById(messageId);
+                const sqlCodeElement = messageElement.querySelector('.sql-code');
                 
-                const sqlText = sqlElement.textContent.trim();
-                copyButton.style.display = originalDisplay;
+                let textToCopy = '';
+                if (!sqlCodeElement) {
+                    textToCopy = messageElement.textContent.replace('SQL Assistant:', '').trim();
+                } else {
+                    textToCopy = sqlCodeElement.textContent.trim();
+                }
                 
                 // Create a temporary textarea
                 const textArea = document.createElement('textarea');
-                textArea.value = sqlText;
+                textArea.value = textToCopy;
                 document.body.appendChild(textArea);
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
                 
                 // Update button to show success
-                const originalContent = button.innerHTML;
-                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i>';
                 button.classList.add('copied');
                 
                 setTimeout(() => {
-                    button.innerHTML = originalContent;
+                    button.innerHTML = originalHtml;
                     button.classList.remove('copied');
                 }, 2000);
             }
