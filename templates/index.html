@@ -73,14 +73,31 @@
         }
         
         /* Chat interface styles */
+        .response-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
         .chat-container {
-            height: 500px;
+            height: 400px;
             overflow-y: auto;
             border: 1px solid #dee2e6;
             border-radius: 0.5rem;
             padding: 1rem;
             background-color: #f8f9fa;
-            margin-bottom: 1rem;
+            flex: 1;
+        }
+        
+        .sql-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: #f5f5f5;
+            flex: 1;
+            font-family: monospace;
         }
         
         .message {
@@ -181,11 +198,25 @@
                         <h3 class="mb-4">SQL Query Assistant Powered by GPT-4 Turbo</h3>
                         <p class="text-muted mb-4">This chatbot provides SQL queries that you can copy and paste into the <a href="https://data-portal.rice-business.org" target="_blank">Data Portal</a> to retrieve data. Just ask a question about stocks or a question about prompting for stock data in the prompt window below.</p>
                         
-                        <!-- Chat messages container -->
-                        <div class="chat-container" id="chatContainer">
-                            <div class="ai-message message">
-                                <strong>SQL Assistant:</strong><br>
-                                Hello! I can help you generate SQL queries for the database. Please describe what data you're looking for, and I'll provide the appropriate SQL query.
+                        <!-- Response containers -->
+                        <div class="response-container">
+                            <!-- Communication window -->
+                            <div>
+                                <h5>Communication</h5>
+                                <div class="chat-container" id="chatContainer">
+                                    <div class="ai-message message">
+                                        <strong>SQL Assistant:</strong><br>
+                                        Hello! I can help you generate SQL queries for the database. Please describe what data you're looking for, and I'll provide the appropriate SQL query.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SQL Query window -->
+                            <div>
+                                <h5>SQL Query <button class="btn btn-sm btn-outline-secondary" id="copySQLBtn" onclick="copyAllSQL()" style="display: none;"><i class="bi bi-clipboard"></i> Copy</button></h5>
+                                <div class="sql-container" id="sqlContainer">
+                                    <div class="text-muted">SQL queries will appear here...</div>
+                                </div>
                             </div>
                         </div>
                         
@@ -239,8 +270,13 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Add AI response to chat
-                    addMessage(data.response, 'ai');
+                    // Add communication and SQL query to respective containers
+                    if (data.communication) {
+                        addMessage(data.communication, 'ai');
+                    }
+                    if (data.sql_query) {
+                        addSQLQuery(data.sql_query);
+                    }
                 } else {
                     addMessage('Error: ' + (data.error || 'Unknown error occurred'), 'ai');
                 }
@@ -260,47 +296,49 @@
             if (sender === 'user') {
                 messageDiv.innerHTML = `<strong>You:</strong><br>${escapeHtml(text)}`;
             } else {
-                // Create message with header containing copy button
-                const messageId = 'msg-' + Date.now();
-                const hasSQL = /\b(SELECT|FROM|WHERE|JOIN|GROUP BY|ORDER BY|HAVING)\b/gi.test(text);
-                
-                let headerHtml = `<div class="message-header">
-                    <strong>SQL Assistant:</strong>`;
-                
-                if (hasSQL) {
-                    headerHtml += `<button class="copy-icon" onclick="copyMessageSQL('${messageId}', this)" title="Copy SQL">
-                        <i class="bi bi-clipboard"></i>
-                    </button>`;
-                }
-                
-                headerHtml += `</div>`;
-                
-                // Format the message content
-                const formattedText = formatSQLResponse(text);
-                messageDiv.id = messageId;
-                messageDiv.innerHTML = headerHtml + formattedText;
+                messageDiv.innerHTML = `<strong>SQL Assistant:</strong><br>${escapeHtml(text).replace(/\n/g, '<br>')}`;
             }
             
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
         
-        function formatSQLResponse(text) {
-            // Look for SQL code patterns and format them
-            const sqlKeywords = /\b(SELECT|FROM|WHERE|JOIN|GROUP BY|ORDER BY|HAVING|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b/gi;
+        function addSQLQuery(sqlQuery) {
+            const sqlContainer = document.getElementById('sqlContainer');
+            const sqlDiv = document.createElement('div');
+            sqlDiv.className = 'sql-code';
+            sqlDiv.innerHTML = escapeHtml(sqlQuery);
             
-            // Check if the text contains SQL keywords
-            if (sqlKeywords.test(text)) {
-                // Try to identify SQL blocks (text between backticks or starting with SELECT, etc.)
-                const sqlBlockRegex = /```sql?\s*([\s\S]*?)```|```([\s\S]*?)```|(SELECT[\s\S]*?;)/gi;
+            // Clear previous content and add new query
+            sqlContainer.innerHTML = '';
+            sqlContainer.appendChild(sqlDiv);
+            
+            // Show copy button
+            document.getElementById('copySQLBtn').style.display = 'inline-block';
+        }
+        
+        async function copyAllSQL() {
+            try {
+                const sqlContainer = document.getElementById('sqlContainer');
+                const sqlText = sqlContainer.textContent.trim();
+                await navigator.clipboard.writeText(sqlText);
                 
-                return text.replace(sqlBlockRegex, (match, p1, p2, p3) => {
-                    const sqlCode = p1 || p2 || p3;
-                    return `<div class="sql-code">${escapeHtml(sqlCode.trim())}</div>`;
-                }).replace(/\n/g, '<br>');
+                // Update button to show success
+                const button = document.getElementById('copySQLBtn');
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                button.classList.add('btn-success');
+                button.classList.remove('btn-outline-secondary');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
             }
-            
-            return escapeHtml(text).replace(/\n/g, '<br>');
         }
         
         function escapeHtml(text) {
@@ -312,64 +350,6 @@
                 "'": '&#039;'
             };
             return text.replace(/[&<>"']/g, m => map[m]);
-        }
-        
-        async function copyMessageSQL(messageId, button) {
-            try {
-                const messageElement = document.getElementById(messageId);
-                const sqlCodeElement = messageElement.querySelector('.sql-code');
-                
-                if (!sqlCodeElement) {
-                    // If no SQL code block, copy entire message text
-                    const messageText = messageElement.textContent.replace('SQL Assistant:', '').trim();
-                    await navigator.clipboard.writeText(messageText);
-                } else {
-                    // Copy only the SQL code
-                    const sqlText = sqlCodeElement.textContent.trim();
-                    await navigator.clipboard.writeText(sqlText);
-                }
-                
-                // Update button to show success
-                const originalHtml = button.innerHTML;
-                button.innerHTML = '<i class="bi bi-check"></i>';
-                button.classList.add('copied');
-                
-                // Reset button after 2 seconds
-                setTimeout(() => {
-                    button.innerHTML = originalHtml;
-                    button.classList.remove('copied');
-                }, 2000);
-                
-            } catch (err) {
-                // Fallback for older browsers
-                const messageElement = document.getElementById(messageId);
-                const sqlCodeElement = messageElement.querySelector('.sql-code');
-                
-                let textToCopy = '';
-                if (!sqlCodeElement) {
-                    textToCopy = messageElement.textContent.replace('SQL Assistant:', '').trim();
-                } else {
-                    textToCopy = sqlCodeElement.textContent.trim();
-                }
-                
-                // Create a temporary textarea
-                const textArea = document.createElement('textarea');
-                textArea.value = textToCopy;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                
-                // Update button to show success
-                const originalHtml = button.innerHTML;
-                button.innerHTML = '<i class="bi bi-check"></i>';
-                button.classList.add('copied');
-                
-                setTimeout(() => {
-                    button.innerHTML = originalHtml;
-                    button.classList.remove('copied');
-                }, 2000);
-            }
         }
         
         // Focus on input when page loads
